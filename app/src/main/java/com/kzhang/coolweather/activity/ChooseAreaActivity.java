@@ -2,7 +2,10 @@ package com.kzhang.coolweather.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -14,7 +17,7 @@ import android.widget.Toast;
 
 import com.kzhang.coolweather.R;
 import com.kzhang.coolweather.model.City;
-import com.kzhang.coolweather.model.CoolWeatherDB;
+import com.kzhang.coolweather.db.CoolWeatherDB;
 import com.kzhang.coolweather.model.County;
 import com.kzhang.coolweather.model.Province;
 import com.kzhang.coolweather.util.HttpCallbackListener;
@@ -63,9 +66,21 @@ public class ChooseAreaActivity extends Activity {
      */
     private int currentLevel;
 
+    /**
+     *是否从WeatherActivity中跳转出来
+     */
+    private boolean isFromWeatherActivity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity",false);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getBoolean("city_selected",false) && !isFromWeatherActivity){
+            Intent intent = new Intent(this,WeatherActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.choose_area);
         listView = (ListView) findViewById(R.id.list_view);
@@ -82,6 +97,12 @@ public class ChooseAreaActivity extends Activity {
                 }else if (currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }else if (currentLevel == LEVEL_COUNTY){
+                    String countyCode = countyList.get(position).getCountyCode();
+                    Intent intent = new Intent(ChooseAreaActivity.this,WeatherActivity.class);
+                    intent.putExtra("county_code",countyCode);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
@@ -143,6 +164,11 @@ public class ChooseAreaActivity extends Activity {
 
     }
 
+    /**
+     * 根据传入的代号的类型从服务器上查询市县数据
+     * @param code
+     * @param type
+     */
     private void queryFromServer(final String code, final String type) {
         String address;
         if (!TextUtils.isEmpty(code)){
@@ -225,6 +251,10 @@ public class ChooseAreaActivity extends Activity {
         }else if (currentLevel == LEVEL_CITY){
             queryProvinces();
         }else{
+            if (isFromWeatherActivity){
+                Intent intent = new Intent(this,WeatherActivity.class);
+                startActivity(intent);
+            }
             finish();
         }
 

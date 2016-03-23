@@ -1,11 +1,13 @@
-package com.kzhang.coolweather.model;
+package com.kzhang.coolweather.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.kzhang.coolweather.db.CoolWeatherOpenHelper;
+import com.kzhang.coolweather.model.City;
+import com.kzhang.coolweather.model.County;
+import com.kzhang.coolweather.model.Province;
 
 import java.util.ArrayList;
 import java.util.List;
