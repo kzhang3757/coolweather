@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.view.ContextThemeWrapper;
 
 import com.kzhang.coolweather.db.CoolWeatherOpenHelper;
 
@@ -135,7 +134,7 @@ public class CoolWeatherDB {
      * @param cityId
      * @return
      */
-    public List<County> loadCounty(int cityId) {
+    public List<County> loadCounties(int cityId) {
         List<County> list = new ArrayList<County>();
         Cursor cursor = db.query("County", null, "city_id = ?", new String[]{String.valueOf(cityId)}, null, null, null);
         if (cursor.moveToFirst()) {
